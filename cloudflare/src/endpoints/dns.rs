@@ -159,6 +159,54 @@ pub enum DnsContent {
     NS { content: String },
     MX { content: String, priority: u16 },
     TXT { content: String },
+    SRV { content: ServiceRecord }
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub enum IpProtocol {
+    #[serde(rename = "_tcp")]
+    TCP, 
+    #[serde(rename = "_udp")]
+    UDP
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct ServiceRecord {
+    pub service: String, // must start with _
+    #[serde(rename = "proto")]
+    pub protocol: IpProtocol,
+    pub priority: u16,
+    pub weight: u16,
+    pub port: u16,
+    pub target: String
+}
+
+impl Into<IpProtocol> for &str {
+    fn into(self) -> IpProtocol {
+        match &self[..] {
+            "tcp" | "TCP" => IpProtocol::TCP,
+            "udp" | "UDP" => IpProtocol::UDP,
+            _ => panic!("Unsupported IP Protocol")
+        }
+    }
+}
+
+impl ServiceRecord {
+    pub fn new<T>(service: &str, 
+        target: &str, 
+        protocol: T, 
+        priority:u16,
+        weight:u16, 
+        port: u16) -> ServiceRecord where T: Into<IpProtocol> {
+        ServiceRecord {
+            service: service.to_string(),
+            protocol: protocol.into(),
+            target: target.to_string(),
+            priority,
+            weight,
+            port
+        }
+    }
 }
 
 #[derive(Deserialize, Debug)]
