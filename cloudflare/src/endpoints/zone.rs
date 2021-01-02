@@ -1,4 +1,4 @@
-use crate::endpoints::{account::Account, plan::Plan};
+use crate::endpoints::{account::AccountDetails, plan::Plan};
 use crate::framework::{
     endpoint::{Endpoint, Method},
     response::ApiResult,
@@ -10,6 +10,7 @@ use chrono::DateTime;
 /// List Zones
 /// List, search, sort, and filter your zones
 /// https://api.cloudflare.com/#zone-list-zones
+#[derive(Debug)]
 pub struct ListZones {
     pub params: ListZonesParams,
 }
@@ -28,6 +29,7 @@ impl Endpoint<Vec<Zone>, ListZonesParams> for ListZones {
 
 /// Zone Details
 /// https://api.cloudflare.com/#zone-zone-details
+#[derive(Debug)]
 pub struct ZoneDetails<'a> {
     pub identifier: &'a str,
 }
@@ -117,7 +119,7 @@ pub struct Zone {
     /// The domain name
     pub name: String,
     /// Information about the account the zone belongs to
-    pub account: Account,
+    pub account: AccountDetails,
     /// A list of beta features in which the zone is participating
     pub betas: Option<Vec<String>>,
     /// When the zone was created
